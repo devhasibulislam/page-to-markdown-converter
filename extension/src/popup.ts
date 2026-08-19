@@ -23,7 +23,9 @@ const markdownBox = $<HTMLPreElement>("markdown");
 const copyBtn = $<HTMLButtonElement>("copy");
 
 function selectedDelivery(): DeliveryMethod {
-  const el = document.querySelector<HTMLInputElement>('input[name="delivery"]:checked');
+  const el = document.querySelector<HTMLInputElement>(
+    'input[name="delivery"]:checked',
+  );
   return (el?.value as DeliveryMethod) ?? "inline";
 }
 
@@ -42,18 +44,22 @@ function toggleEmail(): void {
   emailRow.hidden = selectedDelivery() !== "email";
 }
 
-document.querySelectorAll<HTMLInputElement>('input[name="delivery"]').forEach((r) =>
-  r.addEventListener("change", toggleEmail),
-);
+document
+  .querySelectorAll<HTMLInputElement>('input[name="delivery"]')
+  .forEach((r) => r.addEventListener("change", toggleEmail));
 toggleEmail();
 
 function send(msg: MessageToBackground): Promise<MessageFromBackground> {
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage(msg, (response: MessageFromBackground) => resolve(response));
+    chrome.runtime.sendMessage(msg, (response: MessageFromBackground) =>
+      resolve(response),
+    );
   });
 }
 
-async function pollUntilTerminal(jobId: string): Promise<MessageFromBackground> {
+async function pollUntilTerminal(
+  jobId: string,
+): Promise<MessageFromBackground> {
   for (let i = 0; i < 60; i++) {
     await new Promise((r) => setTimeout(r, 2000));
     const response = await send({ type: "poll", jobId });
@@ -62,7 +68,11 @@ async function pollUntilTerminal(jobId: string): Promise<MessageFromBackground> 
     const s = response.data.status;
     if (s === "ready" || s === "sent" || s === "failed") return response;
   }
-  return { ok: false, error: "timeout", message: "Job did not finish in time." };
+  return {
+    ok: false,
+    error: "timeout",
+    message: "Job did not finish in time.",
+  };
 }
 
 convertBtn.addEventListener("click", async () => {
@@ -95,7 +105,10 @@ convertBtn.addEventListener("click", async () => {
     }
 
     if (response.kind === "job") {
-      setStatus(delivery === "email" ? "Queued email…" : "Preparing download…", "info");
+      setStatus(
+        delivery === "email" ? "Queued email…" : "Preparing download…",
+        "info",
+      );
       const final = await pollUntilTerminal(response.data.jobId);
       if (!final.ok) {
         setStatus(final.message, "err");
@@ -105,7 +118,9 @@ convertBtn.addEventListener("click", async () => {
 
       if (final.data.status === "ready" && final.data.downloadUrl) {
         const backend = await getBackendUrl();
-        chrome.downloads.download({ url: `${backend}${final.data.downloadUrl}` });
+        chrome.downloads.download({
+          url: `${backend}${final.data.downloadUrl}`,
+        });
         setStatus("Download started.", "ok");
       } else if (final.data.status === "sent") {
         setStatus("Email sent.", "ok");

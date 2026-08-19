@@ -11,7 +11,10 @@ import {
   getBackendUrl,
 } from "./shared";
 
-async function grabActiveTabHtml(): Promise<{ html: string; sourceUrl: string }> {
+async function grabActiveTabHtml(): Promise<{
+  html: string;
+  sourceUrl: string;
+}> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) throw new Error("no_active_tab");
 
@@ -25,7 +28,11 @@ async function grabActiveTabHtml(): Promise<{ html: string; sourceUrl: string }>
       tab.id!,
       { type: "grab" },
       (response: { html?: string; sourceUrl?: string } | undefined) => {
-        if (chrome.runtime.lastError || !response?.html || !response.sourceUrl) {
+        if (
+          chrome.runtime.lastError ||
+          !response?.html ||
+          !response.sourceUrl
+        ) {
           reject(new Error(chrome.runtime.lastError?.message ?? "grab_failed"));
           return;
         }
@@ -65,7 +72,9 @@ async function handleConvert(
     const data = (await response.json()) as JobResponse;
     return { ok: true, kind: "job", data };
   }
-  const err = (await response.json().catch(() => null)) as { detail?: ApiError } | null;
+  const err = (await response.json().catch(() => null)) as {
+    detail?: ApiError;
+  } | null;
   const detail = err?.detail;
   return {
     ok: false,
@@ -78,14 +87,22 @@ async function handlePoll(jobId: string): Promise<MessageFromBackground> {
   const backend = await getBackendUrl();
   const response = await fetch(`${backend}/api/jobs/${jobId}`);
   if (!response.ok) {
-    return { ok: false, error: "job_not_found", message: `HTTP ${response.status}` };
+    return {
+      ok: false,
+      error: "job_not_found",
+      message: `HTTP ${response.status}`,
+    };
   }
   const data = (await response.json()) as JobStatus;
   return { ok: true, kind: "status", data };
 }
 
 chrome.runtime.onMessage.addListener(
-  (msg: MessageToBackground, _sender, sendResponse: (m: MessageFromBackground) => void) => {
+  (
+    msg: MessageToBackground,
+    _sender,
+    sendResponse: (m: MessageFromBackground) => void,
+  ) => {
     (async () => {
       try {
         if (msg.type === "convert") {

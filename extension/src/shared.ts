@@ -44,5 +44,7 @@ export const DEFAULT_BACKEND = "http://localhost:8000";
 
 export async function getBackendUrl(): Promise<string> {
   const { backendUrl } = await chrome.storage.local.get("backendUrl");
-  return typeof backendUrl === "string" && backendUrl.length > 0 ? backendUrl : DEFAULT_BACKEND;
+  return typeof backendUrl === "string" && backendUrl.length > 0
+    ? backendUrl
+    : DEFAULT_BACKEND;
 }

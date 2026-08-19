@@ -37,13 +37,21 @@ export default defineConfig({
       closeBundle() {
         const dist = resolve(__dirname, "dist");
         mkdirSync(dist, { recursive: true });
-        copyFileSync(resolve(__dirname, "src/manifest.json"), resolve(dist, "manifest.json"));
-        cpSync(resolve(__dirname, "src/icons"), resolve(dist, "icons"), { recursive: true });
+        copyFileSync(
+          resolve(__dirname, "src/manifest.json"),
+          resolve(dist, "manifest.json"),
+        );
+        cpSync(resolve(__dirname, "src/icons"), resolve(dist, "icons"), {
+          recursive: true,
+        });
 
         const nested = resolve(dist, "src", "popup.html");
         if (existsSync(nested)) {
           const target = resolve(dist, "popup.html");
-          const html = readFileSync(nested, "utf8").replace(/(["'])\.\.\//g, "$1./");
+          const html = readFileSync(nested, "utf8").replace(
+            /(["'])\.\.\//g,
+            "$1./",
+          );
           writeFileSync(target, html);
           rmSync(resolve(dist, "src"), { recursive: true, force: true });
         }

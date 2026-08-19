@@ -11,7 +11,11 @@ function grabHtml(): { html: string; sourceUrl: string } {
 }
 
 chrome.runtime.onMessage.addListener((msg: unknown, _sender, sendResponse) => {
-  if (typeof msg === "object" && msg !== null && (msg as { type?: string }).type === "grab") {
+  if (
+    typeof msg === "object" &&
+    msg !== null &&
+    (msg as { type?: string }).type === "grab"
+  ) {
     sendResponse(grabHtml());
   }
   return true;
