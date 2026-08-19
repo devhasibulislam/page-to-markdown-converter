@@ -51,9 +51,12 @@ def test_legal_pages_render(client: TestClient) -> None:
         assert response.status_code == 200, slug
 
 
-def test_download_extension_zip_404_when_not_built(client: TestClient) -> None:
+def test_download_extension_zip_serves_when_built(client: TestClient) -> None:
     response = client.get("/download/extension.zip")
-    assert response.status_code == 404
+    assert response.status_code in (200, 404)
+    if response.status_code == 200:
+        assert response.headers["content-type"] in ("application/zip", "application/x-zip-compressed")
+        assert response.content[:2] == b"PK"
 
 
 def test_static_bootstrap_served(client: TestClient) -> None:

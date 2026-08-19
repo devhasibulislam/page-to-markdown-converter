@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MarkDrop</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <header>
+      <strong>MarkDrop</strong>
+      <span class="hint">Convert this page to Markdown</span>
+    </header>
+
+    <fieldset id="delivery-group">
+      <label><input type="radio" name="delivery" value="inline" checked /> Preview</label>
+      <label><input type="radio" name="delivery" value="download" /> Download</label>
+      <label><input type="radio" name="delivery" value="email" /> Email</label>
+    </fieldset>
+
+    <div id="email-row" hidden>
+      <label for="email">Send to</label>
+      <input type="email" id="email" placeholder="you@example.com" />
+    </div>
+
+    <button id="convert" type="button">Convert this page</button>
+
+    <div id="status" class="status" hidden></div>
+
+    <div id="preview" hidden>
+      <div class="preview-head">
+        <strong id="preview-title"></strong>
+        <button id="copy" type="button">Copy</button>
+      </div>
+      <pre id="markdown"></pre>
+    </div>
+
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>
