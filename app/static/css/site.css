@@ -355,113 +355,195 @@ pre {
    ========================================================================== */
 
 .hero {
-  padding: clamp(56px, 10vw, 120px) 0 clamp(72px, 12vw, 140px);
+  padding: clamp(40px, 8vw, 96px) 0 clamp(56px, 10vw, 128px);
   border-top: none;
 }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 48px;
-  align-items: center;
-}
+/* --------------------------------------------------------------------------
+   Document-editor hero. The hero itself looks like a rendered Markdown file
+   sitting inside a text editor, reinforcing what the product produces.
+   -------------------------------------------------------------------------- */
 
-@media (min-width: 900px) {
-  .hero-grid {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: 64px;
-  }
-}
-
-.hero-cta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.hero-meta {
-  display: flex;
-  gap: 24px;
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--rule);
-  font-family: var(--font-display);
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.hero-meta strong {
-  color: var(--ink);
-  display: block;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-/* Split visual: HTML on top, arrow, Markdown on bottom. */
-.transform-card {
+.doc-hero {
   border: 1px solid var(--rule);
   background: white;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 1px 0 var(--rule);
 }
 
-.transform-header {
+.doc-hero-chrome {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 12px 16px;
   border-bottom: 1px solid var(--rule);
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
   background: var(--mist);
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--muted);
 }
 
-.transform-header .dot {
-  width: 8px;
-  height: 8px;
+.doc-hero-dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--rule);
   display: inline-block;
+  flex: 0 0 auto;
 }
 
-.transform-body {
-  padding: 20px;
+.doc-hero-tab {
+  margin-left: 16px;
+  padding: 4px 12px;
+  background: white;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.doc-hero-crumb {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.doc-hero-crumb strong {
+  color: var(--accent);
+}
+
+.doc-hero-body {
+  padding: clamp(28px, 5vw, 64px) clamp(24px, 5vw, 72px) clamp(32px, 6vw, 72px);
+}
+
+.doc-hero-h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 6.5vw, 4.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0 0 clamp(20px, 3vw, 32px);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.doc-hero-h1 .hash {
+  color: var(--accent);
+  margin-right: 0.35em;
+}
+
+.doc-hero-rule {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 0 0 clamp(20px, 3vw, 28px);
+}
+
+.doc-hero-meta {
+  margin: 0 0 clamp(24px, 3vw, 36px);
+  padding-left: clamp(14px, 2vw, 20px);
+  border-left: 3px solid var(--accent);
+  font-family: var(--font-display);
+  font-size: clamp(11px, 1.2vw, 13px);
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.doc-hero-meta span:first-child {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.doc-hero-sep {
+  color: var(--rule);
+}
+
+.doc-hero-lead {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 720px;
+  margin: 0 0 clamp(28px, 4vw, 40px);
+}
+
+.doc-hero-comment {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--rule);
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+}
+
+.doc-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: clamp(28px, 4vw, 40px);
+}
+
+.doc-hero-cta .btn {
+  min-height: 44px;
+  padding: 12px 20px;
+}
+
+.doc-hero-footer {
+  padding-top: clamp(20px, 3vw, 28px);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
   font-family: var(--font-display);
   font-size: 12px;
-  line-height: 1.6;
-  color: var(--ink-2);
-  overflow-x: auto;
+  color: var(--muted);
 }
 
-.transform-body .tag {
-  color: #9b59b6;
-}
-
-.transform-body .attr {
-  color: #7f8ea3;
-}
-
-.transform-body .text {
-  color: var(--ink-2);
-}
-
-.transform-arrow {
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  background: var(--mist);
-  padding: 8px 16px;
+.doc-hero-kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  background: white;
   font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
-  color: var(--accent);
-  text-align: center;
-  letter-spacing: 0.08em;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+.doc-hero-footer-label {
+  margin-left: 4px;
+}
+
+@media (max-width: 520px) {
+  .doc-hero-chrome {
+    padding: 10px 12px;
+  }
+  .doc-hero-tab {
+    margin-left: 8px;
+    padding: 3px 10px;
+    font-size: 11px;
+  }
+  .doc-hero-crumb {
+    display: none;
+  }
+  .doc-hero-meta {
+    font-size: 11px;
+  }
+  .doc-hero-cta .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 }
 
 /* ==========================================================================
@@ -992,5 +1074,162 @@ pre {
 @media (min-width: 768px) {
   .hidden-mobile {
     display: block;
+  }
+}
+
+/* ==========================================================================
+   Responsive polish (mobile-first hardening)
+   ========================================================================== */
+
+/* Long URLs and code inside the try-it result should not break the layout. */
+.try-input,
+.try-result-body,
+.doc-hero-lead,
+.post-body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Small phones (< 480px). */
+@media (max-width: 479px) {
+  :root {
+    --gutter: 16px;
+  }
+  body {
+    font-size: 15px;
+  }
+  .nav-inner {
+    padding: 12px var(--gutter);
+    gap: 12px;
+  }
+  .nav-links {
+    gap: 14px;
+  }
+  .nav-link {
+    font-size: 12px;
+  }
+  .btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  .btn.small {
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+  .section {
+    padding: 48px 0;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  .lead {
+    font-size: 1rem;
+  }
+  .eyebrow {
+    font-size: 11px;
+  }
+  .hero-cta {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-cta .btn {
+    justify-content: center;
+    width: 100%;
+  }
+  .browsers {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .browser-btn {
+    padding: 20px 8px;
+    font-size: 11px;
+  }
+  .browser-btn img {
+    width: 32px;
+    height: 32px;
+  }
+  .install-steps {
+    padding: 20px 18px;
+  }
+  .install-steps li {
+    padding: 10px 0 10px 38px;
+    font-size: 13px;
+  }
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .site-footer a {
+    margin-right: 12px;
+  }
+  .pagination {
+    flex-wrap: wrap;
+  }
+  .transform-body,
+  .try-result-body {
+    font-size: 12px;
+  }
+  .post-row {
+    padding: 24px 0;
+  }
+  .post-title {
+    font-size: 18px;
+  }
+  .reading-header {
+    padding: 32px 0 24px;
+    margin-bottom: 28px;
+  }
+  .post-body {
+    font-size: 16px;
+  }
+}
+
+/* Tablet portrait (480-768). */
+@media (min-width: 480px) and (max-width: 767px) {
+  .browsers {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .hero-cta .btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* Hide the GitHub nav link on narrow widths without touching main content. */
+@media (max-width: 640px) {
+  .nav-link.hidden-mobile {
+    display: none;
+  }
+}
+
+/* Prevent any element from causing horizontal scroll. */
+img,
+video,
+svg,
+pre,
+code {
+  max-width: 100%;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+/* Focus-visible: keyboard users get a clear cobalt ring. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+button:focus-visible,
+.btn:focus-visible {
+  outline-offset: 3px;
+}
+
+/* Respect user motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
