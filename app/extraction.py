@@ -1,4 +1,10 @@
-"""HTML → Markdown extraction: trafilatura primary, readability fallback."""
+"""HTML → Markdown extraction.
+
+Runs trafilatura and readability-lxml in parallel and picks whichever output
+carries more Markdown structure (headings, lists, links, images). This helps
+on SPA-heavy sites like LinkedIn where one extractor may return a wall of
+text while the other preserves the outline.
+"""
 
 from __future__ import annotations
 
@@ -39,14 +45,13 @@ def strip_scripts_and_styles(html: str) -> str:
 def extract(html: str, source_url: str | None = None) -> Extracted:
     """Extract main content as Markdown. Raises ExtractionError if none found."""
     cleaned_html = strip_scripts_and_styles(html)
-
-    markdown = _try_trafilatura(cleaned_html)
     title = _extract_title(cleaned_html) or ""
 
-    if not markdown or _word_count(markdown) < _MIN_WORDS:
-        log.info("trafilatura output thin, falling back to readability")
-        markdown, fallback_title = _try_readability(cleaned_html)
-        title = title or fallback_title
+    traf_md = _try_trafilatura(cleaned_html)
+    read_md, read_title = _try_readability(cleaned_html)
+    title = title or read_title
+
+    markdown = _pick_better(traf_md, read_md)
 
     if not markdown or _word_count(markdown) < _MIN_WORDS:
         raise ExtractionError("no_readable_content")
@@ -64,6 +69,9 @@ def _try_trafilatura(html: str) -> str:
         include_links=True,
         include_images=True,
         include_tables=True,
+        include_formatting=True,
+        favor_recall=True,
+        deduplicate=True,
         with_metadata=False,
     )
     return result or ""
@@ -74,11 +82,45 @@ def _try_readability(html: str) -> tuple[str, str]:
         doc = Document(html)
         summary_html = doc.summary(html_partial=True)
         title = doc.short_title() or ""
-        markdown = markdownify(summary_html, heading_style="ATX", strip=["script", "style"])
+        markdown = markdownify(
+            summary_html,
+            heading_style="ATX",
+            bullets="-",
+            strip=["script", "style"],
+        )
         return markdown, title
     except Exception as exc:  # readability raises broad errors on odd HTML
         log.warning("readability fallback failed: %s", exc)
         return "", ""
+
+
+def _pick_better(a: str, b: str) -> str:
+    """Return the output that carries more Markdown structure.
+
+    Falls back to the longer text when both are structureless."""
+    if not a:
+        return b
+    if not b:
+        return a
+
+    a_score, b_score = _structure_score(a), _structure_score(b)
+    if a_score == 0 and b_score == 0:
+        return a if len(a) >= len(b) else b
+    if b_score > a_score * 1.25:
+        log.info("picking readability (score=%d) over trafilatura (score=%d)", b_score, a_score)
+        return b
+    return a
+
+
+def _structure_score(md: str) -> int:
+    """Count Markdown structure signals: headings, list items, links, images, code."""
+    return (
+        len(re.findall(r"^#{1,6} ", md, re.MULTILINE))
+        + len(re.findall(r"^[-*+] ", md, re.MULTILINE))
+        + len(re.findall(r"\[[^\]]+\]\([^)]+\)", md))
+        + len(re.findall(r"!\[[^\]]*\]\([^)]+\)", md))
+        + len(re.findall(r"`[^`]+`", md))
+    )
 
 
 def _extract_title(html: str) -> str:
