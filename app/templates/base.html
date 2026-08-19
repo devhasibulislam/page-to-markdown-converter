@@ -7,9 +7,9 @@
       {% block title %}MarkDrop — Turn any page into clean Markdown{% endblock
       %}
     </title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', path='css/bootstrap.min.css') }}"
+    <meta
+      name="description"
+      content="{% block description %}A browser extension and API that converts any web page into clean Markdown. Works on SPAs, logged-in pages, and paywalled content.{% endblock %}"
     />
     <link
       rel="stylesheet"
@@ -17,52 +17,42 @@
     />
     {% block head_extra %}{% endblock %}
   </head>
-  <body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="/">MarkDrop</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#nav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="nav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
-            <li class="nav-item"><a class="nav-link" href="/docs">API</a></li>
-            <li class="nav-item">
-              <a class="btn btn-dark ms-md-2" href="/download/extension.zip"
-                >Download extension</a
-              >
-            </li>
-          </ul>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="/">MarkDrop</a>
+        <div class="nav-links">
+          <a class="nav-link" href="/blog">Blog</a>
+          <a class="nav-link" href="/docs">API</a>
+          <a
+            class="nav-link hidden-mobile"
+            href="https://github.com/devhasibulislam/page-to-markdown-converter"
+            >GitHub</a
+          >
+          <a class="btn small" href="/download/extension.zip"
+            >Get the extension</a
+          >
         </div>
       </div>
     </nav>
 
-    <main class="flex-grow-1">{% block content %}{% endblock %}</main>
+    <main>{% block content %}{% endblock %}</main>
 
-    <footer class="border-top py-4 mt-5 bg-light">
-      <div class="container d-md-flex justify-content-between">
-        <div class="small text-muted">© {{ 2026 }} MarkDrop. MIT licensed.</div>
-        <div class="small">
-          <a class="text-decoration-none me-3" href="/legal/privacy">Privacy</a>
-          <a class="text-decoration-none me-3" href="/legal/terms">Terms</a>
-          <a class="text-decoration-none me-3" href="/legal/cookies">Cookies</a>
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <div>© 2026 MarkDrop. MIT licensed.</div>
+        <div>
+          <a href="/legal/privacy">Privacy</a>
+          <a href="/legal/terms">Terms</a>
+          <a href="/legal/cookies">Cookies</a>
           <a
-            class="text-decoration-none"
             href="https://github.com/devhasibulislam/page-to-markdown-converter"
-            >GitHub</a
+            >Source</a
           >
         </div>
       </div>
     </footer>
 
-    <script src="{{ url_for('static', path='js/bootstrap.bundle.min.js') }}"></script>
     {% block scripts %}{% endblock %}
   </body>
 </html>

@@ -16,7 +16,8 @@ def test_home_renders(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert b"MarkDrop" in response.content
-    assert b"Turn any web page into clean Markdown" in response.content
+    assert b"Turn any web page" in response.content
+    assert b"clean Markdown" in response.content
     assert b"Chrome" in response.content
     assert b"Vivaldi" in response.content
 

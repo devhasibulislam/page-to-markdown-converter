@@ -1,10 +1,23 @@
 {% extends "base.html" %} {% block title %}{{ page.title }} — MarkDrop{%
 endblock %} {% block content %}
-<article class="py-5">
-  <div class="container" style="max-width: 720px">
-    <h1 class="fw-bold">{{ page.title }}</h1>
-    <div class="small text-muted mb-4">Last updated {{ page.updated }}</div>
+
+<article class="wrap">
+  <div class="reading">
+    <div class="reading-header">
+      <a class="reading-back" href="/">← Home</a>
+      <h1
+        class="display"
+        style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px"
+      >
+        {{ page.title }}
+      </h1>
+      <div class="reading-meta">
+        <span>Last updated {{ page.updated.strftime('%B %d, %Y') }}</span>
+      </div>
+    </div>
     <div class="post-body">{{ page.html | safe }}</div>
   </div>
 </article>
+
+<div style="height: 96px"></div>
 {% endblock %}

@@ -1,53 +1,63 @@
 {% extends "base.html" %} {% block title %}Blog — MarkDrop{% endblock %} {%
 block content %}
-<section class="py-5">
-  <div class="container">
-    <h1 class="h2 fw-bold mb-4">Blog</h1>
+
+<section class="section" style="padding-top: 72px">
+  <div class="wrap">
+    <p class="eyebrow">Blog</p>
+    <h2 style="margin-bottom: 8px">
+      <span class="hash">##</span>Notes on extraction, extensions, and the small
+      web.
+    </h2>
+    <p class="lead">
+      Occasional writing about how MarkDrop works, what breaks, and what we
+      learn along the way.
+    </p>
 
     {% if not posts %}
-    <p class="text-muted">No posts yet.</p>
+    <p class="muted mono" style="margin-top: 40px">// No posts yet.</p>
     {% endif %}
 
-    <div class="row g-4">
+    <div class="post-list">
       {% for post in posts %}
-      <div class="col-md-6">
-        <article class="card h-100">
-          <div class="card-body">
-            <h2 class="h5">
-              <a class="text-decoration-none" href="/blog/{{ post.slug }}"
-                >{{ post.title }}</a
-              >
-            </h2>
-            <div class="small text-muted mb-2">
-              {{ post.date }} · {{ post.author }}
-            </div>
-            <p class="small">{{ post.excerpt }}</p>
-            {% for tag in post.tags %}
-            <span class="badge text-bg-light border">{{ tag }}</span>
-            {% endfor %}
-          </div>
-        </article>
-      </div>
+      <article class="post-row">
+        <div class="post-date">{{ post.date.strftime('%b %d, %Y') }}</div>
+        <div>
+          <h3 class="post-title">
+            <a href="/blog/{{ post.slug }}">{{ post.title }}</a>
+          </h3>
+          <p class="post-excerpt">{{ post.excerpt }}</p>
+        </div>
+        <div class="post-tags">
+          {% for tag in post.tags %}
+          <span class="tag-pill">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      </article>
       {% endfor %}
     </div>
 
     {% if total_pages > 1 %}
-    <nav class="mt-4">
-      <ul class="pagination">
-        <li class="page-item {% if page == 1 %}disabled{% endif %}">
-          <a class="page-link" href="?page={{ page - 1 }}">Previous</a>
-        </li>
-        {% for p in range(1, total_pages + 1) %}
-        <li class="page-item {% if p == page %}active{% endif %}">
-          <a class="page-link" href="?page={{ p }}">{{ p }}</a>
-        </li>
-        {% endfor %}
-        <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-          <a class="page-link" href="?page={{ page + 1 }}">Next</a>
-        </li>
-      </ul>
+    <nav class="pagination">
+      <a
+        class="page-btn {% if page == 1 %}disabled{% endif %}"
+        href="?page={{ page - 1 }}"
+        >← Prev</a
+      >
+      {% for p in range(1, total_pages + 1) %}
+      <a
+        class="page-btn {% if p == page %}active{% endif %}"
+        href="?page={{ p }}"
+        >{{ p }}</a
+      >
+      {% endfor %}
+      <a
+        class="page-btn {% if page == total_pages %}disabled{% endif %}"
+        href="?page={{ page + 1 }}"
+        >Next →</a
+      >
     </nav>
     {% endif %}
   </div>
 </section>
+
 {% endblock %}

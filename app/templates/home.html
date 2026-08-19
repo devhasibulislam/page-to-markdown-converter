@@ -1,209 +1,326 @@
 {% extends "base.html" %} {% block content %}
-<section class="py-5 bg-white border-bottom">
-  <div class="container text-center">
-    <h1 class="display-4 fw-bold">Turn any web page into clean Markdown.</h1>
-    <p class="lead text-muted mt-3">
-      Works on JavaScript-heavy SPAs, logged-in pages, and paywalled content —
-      because the extension uses your real browser session.
-    </p>
-    <div class="mt-4 d-flex justify-content-center gap-2 flex-wrap">
-      <a class="btn btn-dark btn-lg" href="/download/extension.zip"
-        >Download extension (.zip)</a
-      >
-      <a class="btn btn-outline-dark btn-lg" href="#try-it">Try with a URL</a>
-    </div>
-  </div>
-</section>
 
-<section class="py-5 bg-light border-bottom">
-  <div class="container">
-    <h2 class="h4 fw-bold mb-4">Install for your browser</h2>
-    <ul
-      class="nav nav-pills flex-wrap gap-2 mb-4"
-      id="browserTabs"
-      role="tablist"
-    >
-      {% for id, name, logo in browsers %}
-      <li class="nav-item">
-        <button
-          class="nav-link d-flex align-items-center gap-2 {% if loop.first %}active{% endif %}"
-          data-bs-toggle="pill"
-          data-bs-target="#tab-{{ id }}"
-          type="button"
-          role="tab"
-        >
-          <img
-            src="{{ url_for('static', path='img/browsers/' + logo) }}"
-            alt=""
-            width="20"
-            height="20"
-          />
-          {{ name }}
-        </button>
-      </li>
-      {% endfor %}
-    </ul>
-    <div class="tab-content">
-      {% for id, name, logo in browsers %}
-      <div
-        class="tab-pane fade {% if loop.first %}show active{% endif %}"
-        id="tab-{{ id }}"
-        role="tabpanel"
-      >
-        <div class="row g-4">
-          <div class="col-md-6">
-            <div
-              class="ratio ratio-16x9 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center"
-            >
-              <video
-                controls
-                preload="metadata"
-                class="rounded"
-                poster="{{ url_for('static', path='img/browsers/' + logo) }}"
-              >
-                <source
-                  src="{{ url_for('static', path='videos/install-' + id + '.mp4') }}"
-                  type="video/mp4"
-                />
-                Install tutorial video for {{ name }} — coming soon.
-              </video>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <h3 class="h5">Install on {{ name }}</h3>
-            <ol class="small">
-              <li>
-                Download <a href="/download/extension.zip">extension.zip</a> and
-                unzip it.
-              </li>
-              <li>Open your extensions page.</li>
-              <li>
-                Enable Developer Mode (top-right toggle in Chromium browsers).
-              </li>
-              <li>
-                Click <strong>Load unpacked</strong> and choose the unzipped
-                folder.
-              </li>
-            </ol>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<section id="try-it" class="py-5 border-bottom">
-  <div class="container">
-    <h2 class="h4 fw-bold mb-3">Try it with a URL</h2>
-    <p class="text-muted small">
-      Paste a public URL and we'll fetch and convert it. JavaScript-heavy pages
-      need the extension — see the note below.
-    </p>
-    <form method="post" action="/try" class="row g-2 align-items-end">
-      <div class="col-md-9">
-        <label class="form-label small mb-1" for="url">URL</label>
-        <input
-          class="form-control form-control-lg"
-          type="url"
-          name="url"
-          id="url"
-          value="{{ try_url or '' }}"
-          placeholder="https://en.wikipedia.org/wiki/Markdown"
-          required
-        />
-      </div>
-      <div class="col-md-3 d-grid">
-        <button class="btn btn-dark btn-lg" type="submit">Convert</button>
-      </div>
-    </form>
-
-    {% if try_error %}
-    <div class="alert alert-warning mt-4 small">{{ try_error }}</div>
-    {% endif %} {% if try_result %}
-    <div class="mt-4">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <div>
-          <strong>{{ try_result.title }}</strong>
-          <span class="text-muted small"
-            >· {{ try_result.word_count }} words</span
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">v0.1 · MIT</div>
+        <h1 class="display">
+          <span class="display-line"
+            ><span class="hash">#</span>Turn any web page</span
           >
+          <span class="display-line">into clean Markdown.</span>
+        </h1>
+        <p class="lead">
+          A browser extension reads the page your browser has already rendered.
+          A tiny Python service extracts the article and hands it back as
+          Markdown. Works on JavaScript apps, logged-in pages, and paywalled
+          articles.
+        </p>
+        <div class="hero-cta">
+          <a class="btn" href="/download/extension.zip">Download extension</a>
+          <a class="btn ghost" href="#try">Try with a URL</a>
         </div>
-        <button
-          class="btn btn-sm btn-outline-secondary"
-          type="button"
-          id="copy-btn"
-        >
-          Copy
-        </button>
+        <div class="hero-meta">
+          <div><strong>7</strong>browsers supported</div>
+          <div><strong>3</strong>delivery modes</div>
+          <div><strong>0</strong>trackers</div>
+        </div>
       </div>
-      <pre
-        class="border rounded p-3 bg-light small"
-        id="markdown-out"
-        style="max-height: 480px; overflow: auto"
-      >
+
+      <div class="transform-card" aria-hidden="true">
+        <div class="transform-header">
+          <span class="dot"></span>
+          <span>example.com/post.html</span>
+        </div>
+        <div class="transform-body">
+          <span class="tag">&lt;article&gt;</span>
+          <span class="tag">&lt;h1&gt;</span
+          ><span class="text">The joy of Markdown</span
+          ><span class="tag">&lt;/h1&gt;</span>
+          <span class="tag">&lt;p&gt;</span
+          ><span class="text">A lightweight markup</span>
+          <span class="text"> language for creating</span>
+          <span class="text"> formatted text.</span
+          ><span class="tag">&lt;/p&gt;</span> <span class="tag">&lt;a</span>
+          <span class="attr">href=&quot;/spec&quot;</span
+          ><span class="tag">&gt;</span>
+          <span class="text">Read the spec</span>
+          <span class="tag">&lt;/a&gt;</span>
+          <span class="tag">&lt;/article&gt;</span>
+        </div>
+        <div class="transform-arrow">↓ EXTRACT</div>
+        <div class="transform-body">
+          <span class="hash">#</span> The joy of Markdown A lightweight markup
+          language for creating formatted text. [Read the
+          spec](https://example.com/spec)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== THREE WAYS ========== -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">Three ways to convert</p>
+    <h2>
+      <span class="hash">##</span>Pick the interface that fits your workflow.
+    </h2>
+    <p class="lead">
+      The extension is the reliable path. The URL and API paths exist because
+      Swagger and curl need to work too.
+    </p>
+
+    <div class="feature-grid cols-3">
+      <div class="feature">
+        <div class="feature-num">01 · EXTENSION</div>
+        <h3>Click on any page.</h3>
+        <p>
+          Preview inline, download a <code>.md</code>, or email it. Works on
+          SPAs and logged-in sessions because your browser already rendered the
+          page.
+        </p>
+      </div>
+      <div class="feature">
+        <div class="feature-num">02 · URL</div>
+        <h3>Paste a public URL.</h3>
+        <p>
+          Server does a plain HTTP GET, extracts the article, returns Markdown.
+          Won't render JavaScript pages, will tell you when it can't.
+        </p>
+      </div>
+      <div class="feature">
+        <div class="feature-num">03 · API</div>
+        <h3>POST /api/convert.</h3>
+        <p>
+          Same endpoint accepts raw HTML or a URL. Three delivery methods, one
+          contract. Full <a href="/docs">Swagger docs</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TRY IT ========== -->
+<section class="section" id="try">
+  <div class="wrap">
+    <p class="eyebrow">Live</p>
+    <h2><span class="hash">##</span>Try it with a URL.</h2>
+    <p class="lead">
+      Paste any public URL. If the page needs JavaScript to render, we'll say so
+      and point you at the extension.
+    </p>
+
+    <div class="try-panel">
+      <form class="try-form" method="post" action="/try">
+        <div>
+          <label class="try-label" for="url">Public URL</label>
+          <input
+            class="try-input"
+            type="url"
+            name="url"
+            id="url"
+            required
+            value="{{ try_url or '' }}"
+            placeholder="https://en.wikipedia.org/wiki/Markdown"
+          />
+        </div>
+        <button class="btn" type="submit">Convert</button>
+      </form>
+
+      {% if try_error %}
+      <div class="try-alert">{{ try_error }}</div>
+      {% endif %} {% if try_result %}
+      <div class="try-result-head">
+        <div class="try-result-title">{{ try_result.title }}</div>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <span class="muted">{{ try_result.word_count }} words</span>
+          <button class="btn small ghost" type="button" id="copy-btn">
+            Copy
+          </button>
+        </div>
+      </div>
+      <pre class="try-result-body" id="markdown-out">
 {{ try_result.markdown }}</pre
       >
+      {% endif %}
     </div>
-    {% endif %}
   </div>
 </section>
 
-<section class="py-5 bg-white">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-md-3">
-        <h3 class="h6 fw-bold">Works on SPAs</h3>
-        <p class="text-muted small">
-          Your browser already rendered the page. We just read what's there.
+<!-- ========== INSTALL ========== -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">Install</p>
+    <h2><span class="hash">##</span>Load unpacked, once.</h2>
+    <p class="lead">
+      The extension ships as a ZIP for now. Pick your browser, follow four
+      steps. Store submissions are coming later.
+    </p>
+
+    <div class="browsers" role="tablist">
+      {% for id, name, logo in browsers %}
+      <button
+        class="browser-btn {% if loop.first %}active{% endif %}"
+        data-browser="{{ id }}"
+        type="button"
+        role="tab"
+      >
+        <img
+          src="{{ url_for('static', path='img/browsers/' + logo) }}"
+          alt=""
+        />
+        {{ name }}
+      </button>
+      {% endfor %}
+    </div>
+
+    <div class="install-steps">
+      <h3 id="install-title">Install on Chrome</h3>
+      <ol>
+        <li>
+          Download
+          <a href="/download/extension.zip"><code>extension.zip</code></a> and
+          unzip it.
+        </li>
+        <li>
+          Open your browser's extensions page
+          <span id="browser-url" class="muted"
+            >(<code>chrome://extensions</code>)</span
+          >.
+        </li>
+        <li>
+          Enable <strong>Developer mode</strong> (top-right toggle in
+          Chromium-based browsers).
+        </li>
+        <li>
+          Click <strong>Load unpacked</strong> and select the unzipped folder.
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">Why</p>
+    <h2>
+      <span class="hash">##</span>Built for the pages other tools can't read.
+    </h2>
+
+    <div class="feature-grid cols-4">
+      <div class="feature">
+        <div class="feature-num">A</div>
+        <h3>SPAs render fine.</h3>
+        <p>
+          Your browser has already done the JavaScript work. We just read what's
+          there.
         </p>
       </div>
-      <div class="col-md-3">
-        <h3 class="h6 fw-bold">Logged-in pages</h3>
-        <p class="text-muted small">
-          Your session, your content. Nothing leaves your browser unencrypted.
+      <div class="feature">
+        <div class="feature-num">B</div>
+        <h3>Logged-in pages work.</h3>
+        <p>
+          The extension uses your live session. Nothing leaves your machine
+          unencrypted.
         </p>
       </div>
-      <div class="col-md-3">
-        <h3 class="h6 fw-bold">Clean extraction</h3>
-        <p class="text-muted small">
-          Trafilatura strips nav, ads, sidebars. You get the article.
+      <div class="feature">
+        <div class="feature-num">C</div>
+        <h3>Clean extraction.</h3>
+        <p>
+          Trafilatura strips nav, ads, sidebars. Readability catches the rest as
+          a fallback.
         </p>
       </div>
-      <div class="col-md-3">
-        <h3 class="h6 fw-bold">Three ways</h3>
-        <p class="text-muted small">
-          Preview inline, download as .md, or email the file to yourself.
+      <div class="feature">
+        <div class="feature-num">D</div>
+        <h3>No tracking.</h3>
+        <p>
+          Zero analytics scripts. Zero cookies. The cookie policy is one line
+          long.
         </p>
       </div>
     </div>
   </div>
 </section>
+
+<!-- ========== CTA ========== -->
+<section class="section" style="padding-top: 72px; padding-bottom: 96px">
+  <div class="wrap" style="text-align: center">
+    <p class="eyebrow" style="justify-content: center">Get started</p>
+    <h2 style="max-width: 640px; margin: 0 auto 20px">
+      <span class="hash">##</span>Grab the extension and convert your first
+      page.
+    </h2>
+    <div class="hero-cta" style="justify-content: center">
+      <a class="btn" href="/download/extension.zip">Download extension</a>
+      <a class="btn ghost" href="/docs">Read the API docs</a>
+    </div>
+  </div>
+</section>
+
 {% endblock %} {% block scripts %}
 <script>
   (function () {
-    const btn = document.getElementById("copy-btn");
-    const out = document.getElementById("markdown-out");
-    if (!btn || !out) return;
-    btn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(out.innerText);
-      } catch {
-        // Fallback for older browsers or non-HTTPS contexts.
-        const range = document.createRange();
-        range.selectNodeContents(out);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        document.execCommand("copy");
-        sel.removeAllRanges();
-      }
-      const original = btn.textContent;
-      btn.textContent = "Copied!";
-      setTimeout(() => {
-        btn.textContent = original;
-      }, 1500);
+    // Browser picker: swap install-steps title + extensions URL per browser.
+    const details = {
+      chrome: { name: "Chrome", url: "chrome://extensions" },
+      edge: { name: "Edge", url: "edge://extensions" },
+      firefox: {
+        name: "Firefox",
+        url: "about:debugging#/runtime/this-firefox",
+      },
+      brave: { name: "Brave", url: "brave://extensions" },
+      opera: { name: "Opera", url: "opera://extensions" },
+      arc: { name: "Arc", url: "arc://extensions" },
+      vivaldi: { name: "Vivaldi", url: "vivaldi://extensions" },
+    };
+
+    const buttons = document.querySelectorAll(".browser-btn");
+    const title = document.getElementById("install-title");
+    const urlBox = document.getElementById("browser-url");
+
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        buttons.forEach(function (x) {
+          x.classList.remove("active");
+        });
+        b.classList.add("active");
+        const info = details[b.dataset.browser];
+        if (info && title && urlBox) {
+          title.textContent = "Install on " + info.name;
+          urlBox.innerHTML = "(<code>" + info.url + "</code>)";
+        }
+      });
     });
+
+    // Copy button on the try-it result.
+    const copyBtn = document.getElementById("copy-btn");
+    const out = document.getElementById("markdown-out");
+    if (copyBtn && out) {
+      copyBtn.addEventListener("click", async function () {
+        try {
+          await navigator.clipboard.writeText(out.innerText);
+        } catch {
+          const range = document.createRange();
+          range.selectNodeContents(out);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          document.execCommand("copy");
+          sel.removeAllRanges();
+        }
+        const original = copyBtn.textContent;
+        copyBtn.textContent = "Copied";
+        setTimeout(function () {
+          copyBtn.textContent = original;
+        }, 1500);
+      });
+    }
   })();
 </script>
 {% endblock %}
