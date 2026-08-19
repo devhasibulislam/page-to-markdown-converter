@@ -8,7 +8,7 @@ tags: [announcement, markdown]
 ---
 
 MarkDrop turns any web page you're looking at into clean Markdown. Not "any URL
-we can reach" — any page you can see, including the JavaScript-heavy dashboards,
+we can reach". Any page you can see, including the JavaScript-heavy dashboards,
 the paywalled articles, and the internal wikis that live behind a login.
 
 ## The problem
@@ -21,8 +21,8 @@ a `<script>` tag. Users get a `.md` file with one sentence in it.
 
 Do the rendering in the browser that already rendered it. The MarkDrop extension
 reads the fully-hydrated DOM and hands it to a small Python service that
-extracts the main content using trafilatura. You get clean Markdown back —
-preview, download, or email.
+extracts the main content using trafilatura. You get clean Markdown back, ready
+to preview, download, or email.
 
 ## What's inside
 
@@ -35,6 +35,3 @@ preview, download, or email.
 
 Head back to the [home page](/) and paste a URL into the "Try it with a URL" box.
 Or download the extension and click it on any page.
-
-We're just getting started. More posts on how MarkDrop works internally are on
-the way.

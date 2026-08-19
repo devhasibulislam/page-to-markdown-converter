@@ -3,8 +3,8 @@ title: "Cookie policy"
 updated: 2026-08-19
 ---
 
-MarkDrop does not set any cookies. Not first-party, not third-party, not
-essential, not analytics. Nothing.
+MarkDrop does not set any cookies of any kind. That includes first-party,
+third-party, essential, and analytics cookies.
 
 ## What that means
 

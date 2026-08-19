@@ -34,7 +34,7 @@ We do not:
 
 ## Third parties
 
-- SMTP provider (used only when you choose the email delivery method) — see
+- SMTP provider (used only when you choose the email delivery method). See
   their privacy policy for how they handle the message in transit.
 
 ## Contact
