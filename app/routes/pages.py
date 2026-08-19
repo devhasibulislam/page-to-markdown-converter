@@ -11,6 +11,7 @@ from fastapi.templating import Jinja2Templates
 from app import blog
 from app.extraction import ExtractionError, extract
 from app.fetcher import FetchError, fetch
+from app.limits import limiter
 
 _BROWSERS = [
     ("chrome", "Chrome", "google-chrome.webp"),
@@ -33,6 +34,7 @@ def home(request: Request) -> HTMLResponse:
 
 
 @router.post("/try", response_class=HTMLResponse)
+@limiter.limit("10/minute")
 async def try_convert(request: Request, url: str = Form(...)) -> HTMLResponse:
     context: dict[str, object] = {"browsers": _BROWSERS, "try_url": url}
     try:

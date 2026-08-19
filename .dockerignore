@@ -1,0 +1,32 @@
+# Files not needed inside the Docker image
+.git/
+.github/
+.vscode/
+.agents/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+
+docs/
+tests/
+extension/
+skills/
+hooks/
+node_modules/
+
+.env.example
+.env.local
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+README.md
+docker-compose.yaml
+.dockerignore
+.gitignore
+.pre-commit-config.yaml
+skills-lock.json
+
+# We DO copy dist/ so the /download/extension.zip route works.

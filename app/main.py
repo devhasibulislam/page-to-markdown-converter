@@ -7,8 +7,11 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app import blog
+from app.limits import limiter
 from app.routes import convert, jobs, pages
 
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -26,6 +29,9 @@ app = FastAPI(
     description="Turn any web page into clean Markdown.",
     lifespan=lifespan,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
 
 app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 

@@ -5,12 +5,13 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import ValidationError
 
 from app.extraction import ExtractionError, extract
 from app.fetcher import FetchError, fetch
 from app.jobs import set_job
+from app.limits import limiter
 from app.schemas import ApiError, ConvertRequest, InlineResponse, JobResponse
 from app.tasks import process_conversion
 
@@ -59,23 +60,24 @@ router = APIRouter(prefix="/api", tags=["convert"])
         }
     },
 )
-async def convert(payload: dict) -> InlineResponse | JobResponse:
+@limiter.limit("60/minute")
+async def convert(request: Request, payload: dict) -> InlineResponse | JobResponse:
     try:
-        request = ConvertRequest.model_validate(payload)
+        parsed = ConvertRequest.model_validate(payload)
     except ValidationError as exc:
         raise _map_validation_error(exc) from exc
 
-    html = request.html
+    html = parsed.html
     fetched_from_url = html is None
     if fetched_from_url:
-        assert request.url is not None
+        assert parsed.url is not None
         try:
-            html = await fetch(request.url)
+            html = await fetch(parsed.url)
         except FetchError as exc:
             raise HTTPException(422, ApiError(error=str(exc), message="Failed to fetch URL.").model_dump()) from exc
 
     try:
-        result = extract(html, source_url=request.source_url)
+        result = extract(html, source_url=parsed.source_url)
     except ExtractionError:
         code = "js_rendered_page_use_extension" if fetched_from_url else "no_readable_content"
         message = (
@@ -85,9 +87,9 @@ async def convert(payload: dict) -> InlineResponse | JobResponse:
         )
         raise HTTPException(422, ApiError(error=code, message=message).model_dump()) from None
 
-    if request.delivery_method == "inline":
+    if parsed.delivery_method == "inline":
         return InlineResponse(
-            source_url=request.source_url or "",
+            source_url=parsed.source_url or "",
             title=result.title,
             markdown=result.markdown,
             word_count=result.word_count,
@@ -101,9 +103,9 @@ async def convert(payload: dict) -> InlineResponse | JobResponse:
         job_id=job_id,
         title=result.title,
         markdown=result.markdown,
-        source_url=request.source_url,
-        delivery=request.delivery_method,
-        email=request.email,
+        source_url=parsed.source_url,
+        delivery=parsed.delivery_method,
+        email=parsed.email,
     )
     return JobResponse(job_id=job_id)
 
