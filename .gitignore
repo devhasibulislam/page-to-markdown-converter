@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Node
+node_modules/
+extension/dist/
+
+# Env
+# .env is INTENTIONALLY committed in this project (user preference).
+# Only ignore local overrides.
+.env.local
+.env.*.local
+
+# Editor
+.vscode/*
+!.vscode/mcp.json
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Jobs / runtime
+/tmp/jobs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Skills CLI cache (skills themselves live under .agents/skills/ and ARE committed)
+skills-lock.json.bak

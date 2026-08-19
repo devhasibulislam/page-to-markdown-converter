@@ -1,0 +1,53 @@
+{% extends "base.html" %} {% block title %}Blog — MarkDrop{% endblock %} {%
+block content %}
+<section class="py-5">
+  <div class="container">
+    <h1 class="h2 fw-bold mb-4">Blog</h1>
+
+    {% if not posts %}
+    <p class="text-muted">No posts yet.</p>
+    {% endif %}
+
+    <div class="row g-4">
+      {% for post in posts %}
+      <div class="col-md-6">
+        <article class="card h-100">
+          <div class="card-body">
+            <h2 class="h5">
+              <a class="text-decoration-none" href="/blog/{{ post.slug }}"
+                >{{ post.title }}</a
+              >
+            </h2>
+            <div class="small text-muted mb-2">
+              {{ post.date }} · {{ post.author }}
+            </div>
+            <p class="small">{{ post.excerpt }}</p>
+            {% for tag in post.tags %}
+            <span class="badge text-bg-light border">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="mt-4">
+      <ul class="pagination">
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+          <a class="page-link" href="?page={{ page - 1 }}">Previous</a>
+        </li>
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+          <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+          <a class="page-link" href="?page={{ page + 1 }}">Next</a>
+        </li>
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

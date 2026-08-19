@@ -1,0 +1,195 @@
+{% extends "base.html" %} {% block content %}
+<section class="py-5 bg-white border-bottom">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold">Turn any web page into clean Markdown.</h1>
+    <p class="lead text-muted mt-3">
+      Works on JavaScript-heavy SPAs, logged-in pages, and paywalled content —
+      because the extension uses your real browser session.
+    </p>
+    <div class="mt-4 d-flex justify-content-center gap-2 flex-wrap">
+      <a class="btn btn-dark btn-lg" href="/download/extension.zip"
+        >Download extension (.zip)</a
+      >
+      <a class="btn btn-outline-dark btn-lg" href="#try-it">Try with a URL</a>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light border-bottom">
+  <div class="container">
+    <h2 class="h4 fw-bold mb-4">Install for your browser</h2>
+    <ul
+      class="nav nav-pills flex-wrap gap-2 mb-4"
+      id="browserTabs"
+      role="tablist"
+    >
+      {% for id, name, logo in browsers %}
+      <li class="nav-item">
+        <button
+          class="nav-link d-flex align-items-center gap-2 {% if loop.first %}active{% endif %}"
+          data-bs-toggle="pill"
+          data-bs-target="#tab-{{ id }}"
+          type="button"
+          role="tab"
+        >
+          <img
+            src="{{ url_for('static', path='img/browsers/' + logo) }}"
+            alt=""
+            width="20"
+            height="20"
+          />
+          {{ name }}
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content">
+      {% for id, name, logo in browsers %}
+      <div
+        class="tab-pane fade {% if loop.first %}show active{% endif %}"
+        id="tab-{{ id }}"
+        role="tabpanel"
+      >
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div
+              class="ratio ratio-16x9 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center"
+            >
+              <video
+                controls
+                preload="metadata"
+                class="rounded"
+                poster="{{ url_for('static', path='img/browsers/' + logo) }}"
+              >
+                <source
+                  src="{{ url_for('static', path='videos/install-' + id + '.mp4') }}"
+                  type="video/mp4"
+                />
+                Install tutorial video for {{ name }} — coming soon.
+              </video>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h3 class="h5">Install on {{ name }}</h3>
+            <ol class="small">
+              <li>
+                Download <a href="/download/extension.zip">extension.zip</a> and
+                unzip it.
+              </li>
+              <li>Open your extensions page.</li>
+              <li>
+                Enable Developer Mode (top-right toggle in Chromium browsers).
+              </li>
+              <li>
+                Click <strong>Load unpacked</strong> and choose the unzipped
+                folder.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="try-it" class="py-5 border-bottom">
+  <div class="container">
+    <h2 class="h4 fw-bold mb-3">Try it with a URL</h2>
+    <p class="text-muted small">
+      Paste a public URL and we'll fetch and convert it. JavaScript-heavy pages
+      need the extension — see the note below.
+    </p>
+    <form method="post" action="/try" class="row g-2 align-items-end">
+      <div class="col-md-9">
+        <label class="form-label small mb-1" for="url">URL</label>
+        <input
+          class="form-control form-control-lg"
+          type="url"
+          name="url"
+          id="url"
+          value="{{ try_url or '' }}"
+          placeholder="https://en.wikipedia.org/wiki/Markdown"
+          required
+        />
+      </div>
+      <div class="col-md-3 d-grid">
+        <button class="btn btn-dark btn-lg" type="submit">Convert</button>
+      </div>
+    </form>
+
+    {% if try_error %}
+    <div class="alert alert-warning mt-4 small">{{ try_error }}</div>
+    {% endif %} {% if try_result %}
+    <div class="mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <strong>{{ try_result.title }}</strong>
+          <span class="text-muted small"
+            >· {{ try_result.word_count }} words</span
+          >
+        </div>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          type="button"
+          onclick="copyMarkdown()"
+        >
+          Copy
+        </button>
+      </div>
+      <pre
+        class="border rounded p-3 bg-light small"
+        id="markdown-out"
+        style="max-height: 480px; overflow: auto"
+      >
+{{ try_result.markdown }}</pre
+      >
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3">
+        <h3 class="h6 fw-bold">Works on SPAs</h3>
+        <p class="text-muted small">
+          Your browser already rendered the page. We just read what's there.
+        </p>
+      </div>
+      <div class="col-md-3">
+        <h3 class="h6 fw-bold">Logged-in pages</h3>
+        <p class="text-muted small">
+          Your session, your content. Nothing leaves your browser unencrypted.
+        </p>
+      </div>
+      <div class="col-md-3">
+        <h3 class="h6 fw-bold">Clean extraction</h3>
+        <p class="text-muted small">
+          Trafilatura strips nav, ads, sidebars. You get the article.
+        </p>
+      </div>
+      <div class="col-md-3">
+        <h3 class="h6 fw-bold">Three ways</h3>
+        <p class="text-muted small">
+          Preview inline, download as .md, or email the file to yourself.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  function copyMarkdown() {
+    const el = document.getElementById("markdown-out");
+    if (!el) return;
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      event.target.textContent = "Copied!";
+      setTimeout(() => {
+        event.target.textContent = "Copy";
+      }, 1500);
+    });
+  }
+</script>
+{% endblock %}

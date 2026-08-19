@@ -1,0 +1,10 @@
+{% extends "base.html" %} {% block title %}{{ page.title }} — MarkDrop{%
+endblock %} {% block content %}
+<article class="py-5">
+  <div class="container" style="max-width: 720px">
+    <h1 class="fw-bold">{{ page.title }}</h1>
+    <div class="small text-muted mb-4">Last updated {{ page.updated }}</div>
+    <div class="post-body">{{ page.html | safe }}</div>
+  </div>
+</article>
+{% endblock %}

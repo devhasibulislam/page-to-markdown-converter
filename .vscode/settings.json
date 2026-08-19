@@ -1,0 +1,22 @@
+{
+  "chat.agent.enabled": true,
+  "chat.tools.autoApprove": {
+    "read_file": true,
+    "grep_search": true,
+    "semantic_search": true,
+    "file_search": true,
+    "list_dir": true,
+    "get_errors": true,
+    "vscode_listCodeUsages": true,
+    "fetch_webpage": true,
+    "run_in_terminal": false
+  },
+  "python.analysis.typeCheckingMode": "strict",
+  "editor.formatOnSave": true,
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
