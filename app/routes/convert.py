@@ -15,16 +15,48 @@ from app.limits import limiter
 from app.schemas import ApiError, ConvertRequest, InlineResponse, JobResponse
 from app.tasks import process_conversion
 
-router = APIRouter(prefix="/api", tags=["convert"])
+router = APIRouter(prefix="/api", tags=["Convert"])
 
 
 @router.post(
     "/convert",
     response_model=None,
+    summary="Convert a page to Markdown",
+    description=(
+        "Extracts the main content of a web page and returns it as Markdown.\n\n"
+        "**Provide exactly one of:**\n"
+        "- `html`: the raw outerHTML of a page (used by the browser extension after "
+        "the page has fully rendered).\n"
+        "- `url`: a public URL that the server fetches with a plain HTTP GET.\n\n"
+        "**Delivery methods (`deliveryMethod`):**\n"
+        "- `inline` (default): the response body contains the Markdown.\n"
+        "- `download`: returns 202 with a `jobId`. Poll `/api/jobs/{jobId}` until "
+        "`status=ready`, then GET `/api/download/{jobId}`.\n"
+        "- `email`: returns 202 with a `jobId`. A worker sends the .md file to the "
+        "`email` address. Poll `/api/jobs/{jobId}` until `status=sent` or `failed`.\n\n"
+        "Rate limit: 60 requests per minute per IP."
+    ),
     responses={
-        200: {"model": InlineResponse},
-        202: {"model": JobResponse},
-        422: {"model": ApiError},
+        200: {
+            "model": InlineResponse,
+            "description": "Inline conversion complete. The Markdown is in the response body.",
+        },
+        202: {
+            "model": JobResponse,
+            "description": "Async delivery queued. Poll `/api/jobs/{jobId}` for status.",
+        },
+        422: {
+            "model": ApiError,
+            "description": (
+                "Validation or extraction failure. Possible `error` values: "
+                "`missing_input`, `email_required`, `no_readable_content`, "
+                "`js_rendered_page_use_extension`, `fetch_failed`."
+            ),
+        },
+        429: {
+            "model": ApiError,
+            "description": "Rate limit exceeded (over 60/minute for this IP).",
+        },
     },
     openapi_extra={
         "requestBody": {
@@ -33,6 +65,7 @@ router = APIRouter(prefix="/api", tags=["convert"])
                     "examples": {
                         "url_inline": {
                             "summary": "URL, inline preview",
+                            "description": "Simplest call. Server fetches the URL and returns Markdown in the response.",
                             "value": {
                                 "url": "https://en.wikipedia.org/wiki/Markdown",
                                 "deliveryMethod": "inline",
@@ -40,14 +73,34 @@ router = APIRouter(prefix="/api", tags=["convert"])
                         },
                         "html_inline": {
                             "summary": "HTML from extension, inline preview",
+                            "description": (
+                                "How the browser extension calls the endpoint. The extension "
+                                "sends the already-rendered outerHTML so the server does not "
+                                "have to fetch the page itself."
+                            ),
                             "value": {
-                                "html": "<html><body><article><h1>Hi</h1><p>Body text here.</p></article></body></html>",
+                                "html": "<html><body><article><h1>Hi</h1><p>Body text here with enough words to pass the minimum content threshold used by the extractor before it falls back to readability.</p></article></body></html>",
                                 "sourceUrl": "https://example.com/post",
                                 "deliveryMethod": "inline",
                             },
                         },
+                        "url_download": {
+                            "summary": "URL, async .md download",
+                            "description": (
+                                "Returns 202 with a jobId. Poll /api/jobs/{jobId} until "
+                                "status=ready, then GET /api/download/{jobId} for the file."
+                            ),
+                            "value": {
+                                "url": "https://en.wikipedia.org/wiki/Markdown",
+                                "deliveryMethod": "download",
+                            },
+                        },
                         "url_email": {
                             "summary": "URL, delivered by email",
+                            "description": (
+                                "Returns 202 with a jobId. A Celery worker converts the page "
+                                "and emails the .md file as an attachment."
+                            ),
                             "value": {
                                 "url": "https://en.wikipedia.org/wiki/Markdown",
                                 "deliveryMethod": "email",
@@ -62,6 +115,13 @@ router = APIRouter(prefix="/api", tags=["convert"])
 )
 @limiter.limit("60/minute")
 async def convert(request: Request, payload: dict) -> InlineResponse | JobResponse:
+    """Convert a web page to Markdown.
+
+    See the endpoint summary for the full contract. The handler performs
+    extraction synchronously so the client learns about unreadable content
+    immediately; async delivery (download or email) only defers the *delivery*
+    step, not the extraction.
+    """
     try:
         parsed = ConvertRequest.model_validate(payload)
     except ValidationError as exc:

@@ -132,7 +132,7 @@
         <button
           class="btn btn-sm btn-outline-secondary"
           type="button"
-          onclick="copyMarkdown()"
+          id="copy-btn"
         >
           Copy
         </button>
@@ -181,15 +181,29 @@
 </section>
 {% endblock %} {% block scripts %}
 <script>
-  function copyMarkdown() {
-    const el = document.getElementById("markdown-out");
-    if (!el) return;
-    navigator.clipboard.writeText(el.innerText).then(() => {
-      event.target.textContent = "Copied!";
+  (function () {
+    const btn = document.getElementById("copy-btn");
+    const out = document.getElementById("markdown-out");
+    if (!btn || !out) return;
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(out.innerText);
+      } catch {
+        // Fallback for older browsers or non-HTTPS contexts.
+        const range = document.createRange();
+        range.selectNodeContents(out);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand("copy");
+        sel.removeAllRanges();
+      }
+      const original = btn.textContent;
+      btn.textContent = "Copied!";
       setTimeout(() => {
-        event.target.textContent = "Copy";
+        btn.textContent = original;
       }, 1500);
     });
-  }
+  })();
 </script>
 {% endblock %}
