@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import ValidationError
 
 from app.extraction import ExtractionError, extract
@@ -114,7 +114,11 @@ router = APIRouter(prefix="/api", tags=["Convert"])
     },
 )
 @limiter.limit("60/minute")
-async def convert(request: Request, payload: dict) -> InlineResponse | JobResponse:
+async def convert(
+    request: Request,
+    payload: dict,
+    response: Response,
+) -> InlineResponse | JobResponse:
     """Convert a web page to Markdown.
 
     See the endpoint summary for the full contract. The handler performs
@@ -167,6 +171,7 @@ async def convert(request: Request, payload: dict) -> InlineResponse | JobRespon
         delivery=parsed.delivery_method,
         email=parsed.email,
     )
+    response.status_code = status.HTTP_202_ACCEPTED
     return JobResponse(job_id=job_id)
 
 

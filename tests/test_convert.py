@@ -33,6 +33,36 @@ def test_convert_inline_html_returns_markdown() -> None:
     assert body["wordCount"] > 0
 
 
+def test_convert_download_returns_202_with_job_id() -> None:
+    response = client.post(
+        "/api/convert",
+        json={
+            "html": HTML_SAMPLE,
+            "sourceUrl": "https://example.com/x",
+            "deliveryMethod": "download",
+        },
+    )
+    assert response.status_code == 202
+    body = response.json()
+    assert "jobId" in body
+    assert len(body["jobId"]) > 0
+
+
+def test_convert_email_returns_202_with_job_id() -> None:
+    response = client.post(
+        "/api/convert",
+        json={
+            "html": HTML_SAMPLE,
+            "sourceUrl": "https://example.com/x",
+            "deliveryMethod": "email",
+            "email": "reader@example.com",
+        },
+    )
+    assert response.status_code == 202
+    body = response.json()
+    assert "jobId" in body
+
+
 def test_convert_missing_input_returns_422() -> None:
     response = client.post("/api/convert", json={"deliveryMethod": "inline"})
     assert response.status_code == 422

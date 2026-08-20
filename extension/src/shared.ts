@@ -40,7 +40,7 @@ export type MessageFromBackground =
   | { ok: true; kind: "status"; data: JobStatus }
   | { ok: false; error: string; message: string };
 
-export const DEFAULT_BACKEND = "http://localhost:8000";
+export const DEFAULT_BACKEND = "https://md.hamzen.com";
 
 export async function getBackendUrl(): Promise<string> {
   const { backendUrl } = await chrome.storage.local.get("backendUrl");
