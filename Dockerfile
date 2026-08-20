@@ -29,7 +29,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libxml2 libxslt1.1 \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r app && useradd -r -g app app
+    && groupadd -r app && useradd -r -g app app \
+    && mkdir -p /tmp/page-to-md-jobs \
+    && chown -R app:app /tmp/page-to-md-jobs
 
 WORKDIR /app
 
