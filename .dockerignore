@@ -29,4 +29,5 @@ docker-compose.yaml
 skills-lock.json
 
 # LICENSE and README.md are needed at build time (pyproject.toml references LICENSE).
+
 # dist/ is copied so /download/extension.zip works.
