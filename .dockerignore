@@ -22,12 +22,11 @@ node_modules/
 .env.local
 CHANGELOG.md
 CONTRIBUTING.md
-LICENSE
-README.md
 docker-compose.yaml
 .dockerignore
 .gitignore
 .pre-commit-config.yaml
 skills-lock.json
 
-# We DO copy dist/ so the /download/extension.zip route works.
+# LICENSE and README.md are needed at build time (pyproject.toml references LICENSE).
+# dist/ is copied so /download/extension.zip works.
