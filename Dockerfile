@@ -10,7 +10,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 RUN pip install --no-cache-dir uv==0.4.30
 
-WORKDIR /build
+WORKDIR /app
 COPY pyproject.toml uv.lock LICENSE README.md ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-install-project
@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY --from=builder --chown=app:app /build/.venv /app/.venv
+COPY --from=builder --chown=app:app /app/.venv /app/.venv
 COPY --chown=app:app app/ ./app/
 COPY --chown=app:app dist/ ./dist/
 
