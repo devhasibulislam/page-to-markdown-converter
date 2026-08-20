@@ -52,7 +52,7 @@ jobs:
       - name: Package extension zip
         run: |
           mkdir -p dist
-          cd extension/dist && zip -qr ../../dist/extension.zip .
+          (cd extension/dist && zip -qr ../../dist/extension.zip .)
           ls -la dist/extension.zip
 
       - name: Setup Docker Buildx
